@@ -252,6 +252,19 @@ describeWithCreds('Credentials server', () => {
     ({ stdout } = await rdctlCredWithStdin('get', bobsURL));
     expect(stdout).toContain('credentials not found in native keychain');
 
+    // Verify we can send a longish payload. The limit is 4 MiB, but that takes too long to test.
+    body.Secret = 'x'.repeat(40 * 1024);
+    if (body.Secret) {
+      const { stdout, stderr, error } = await rdctlCredWithStdin('store', JSON.stringify(body));
+
+      expect({
+        stdout, stderr, error
+      }).toEqual({
+        stdout: '',
+        stderr: '',
+        error:  undefined
+      });
+    }
     // Don't bother trying to test erasing a non-existent credential, because the
     // behavior is all over the place. Fails with osxkeychain, succeeds with wincred.
   });
