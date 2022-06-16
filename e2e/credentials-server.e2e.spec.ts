@@ -25,6 +25,7 @@ import stream from 'stream';
 import util from 'util';
 import { spawnSync } from 'child_process';
 
+import * as crypto from 'crypto';
 import { expect, test } from '@playwright/test';
 import { BrowserContext, ElectronApplication, Page, _electron } from 'playwright';
 
@@ -34,7 +35,6 @@ import paths from '@/utils/paths';
 import { ServerState } from '@/main/commandServer/httpCommandServer';
 import { spawnFile } from '@/utils/childProcess';
 import { findHomeDir } from '@/config/findHomeDir';
-import * as crypto from 'crypto';
 
 let credStore: string;
 
