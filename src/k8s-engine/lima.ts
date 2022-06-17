@@ -731,11 +731,12 @@ export default class LimaBackend extends events.EventEmitter implements K8s.Kube
   protected async lima(this: Readonly<this>, ...args: string[]): Promise<void> {
     args = this.debug ? ['--debug'].concat(args) : args;
     try {
-      await childProcess.spawnFile(LimaBackend.limactl, args,
-        { env: LimaBackend.limaEnv, stdio: console });
+      const { stdout, stderr } = await childProcess.spawnFile(LimaBackend.limactl, args,
+        { env: LimaBackend.limaEnv, stdio: ['ignore', 'pipe', 'pipe'] });
+      let cr = stderr || stdout ? "\r\n" : "";
+      console.log(`> limactl ${ args.join(' ') }${cr}${stderr}${stdout}`);
     } catch (ex) {
-      console.error(`+ limactl ${ args.join(' ') }`);
-      console.error(ex);
+      console.error(`> limactl ${ args.join(' ') }\n${ex}`);
       throw ex;
     }
   }
@@ -745,8 +746,10 @@ export default class LimaBackend extends events.EventEmitter implements K8s.Kube
    */
   protected async limaWithCapture(this: Readonly<this>, ...args: string[]): Promise<string> {
     args = this.debug ? ['--debug'].concat(args) : args;
-    const { stdout } = await childProcess.spawnFile(LimaBackend.limactl, args,
-      { env: LimaBackend.limaEnv, stdio: ['ignore', 'pipe', console] });
+    const { stdout, stderr } = await childProcess.spawnFile(LimaBackend.limactl, args,
+      { env: LimaBackend.limaEnv, stdio: ['ignore', 'pipe', 'pipe'] });
+    let cr = stderr || stdout ? "\r\n" : "";
+    console.log(`> limactl ${ args.join(' ') }${cr}${stderr}${stdout}`);
 
     return stdout;
   }
